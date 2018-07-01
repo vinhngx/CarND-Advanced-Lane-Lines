@@ -108,6 +108,7 @@ The image is devided into two halves: the left lane and right lane are detected 
 The base points for start searching the lane is the peak location of the histogram. 
 
 Starting from the bottom section of the image, for each window centred at the base point, if the number of pixel is larger than the threshold, they are determined to form part of the respective lane lines. 
+Finally, second order polinomials are fitted to the left and right lanes seperately.
 The outcome of this step for the above test sample is demonstrated in the below image:
 ![alt text][image5]
 
@@ -157,5 +158,5 @@ selected_img = region_of_interest(result, vertices)
 
 Despite these modification, it is still challenging to detect lanes in the challenging videos.
 
-The approach presented in this project rely heavily on a hand-designed pipeline, with expert understanding of the color space, and some heuristical rules (such as binary thresholding, histogram threshold to detect lane pixels). Learning based approached based on human anotated lane lines might improve the existing approach, as well as resolving corner cases (such as left lane appearing in the right-half of the image (due to vehicle veering off road). 
+The approach presented in this project relies heavily on a hand-designed pipeline, with expert understanding of the color space, and some heuristical rules (such as binary thresholding, histogram threshold to detect lane pixels). Learning-based approaches using human-annotated lane lines might improve the existing approach, as well as resolving corner cases (such as left lane appearing in the right-half of the image (due to vehicle veering off road). 
 
