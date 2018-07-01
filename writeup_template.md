@@ -15,7 +15,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[undistort_img_example]: ./examples/undistort_img_example.png "Undistorted"
+[undistort_img_example]: ./examples/undistorted_img_example.png "Undistorted"
 
 [image2]: examples/undistorted_test1.png "Test image"
 [image3]: ./examples/undistorted_test1_binary.png "Binary Example"
@@ -48,7 +48,7 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![undistort_img_example][undistort_img_example]
+![undistorted_img_example][undistorted_img_example]
 
 ### Pipeline (single images)
 
@@ -61,7 +61,7 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image. This step is detailed in Step 2 of the Jupyter notebook "pipeline-single-image.ipynb". Here's an example of my output for this step. 
+I used a combination of color transform and gradient thresholds to generate a binary image. This step is detailed in Step 2 of the Jupyter notebook "pipeline-single-image.ipynb". Here's an example of my output for this step. 
 
 ![alt text][image3]
 
@@ -130,7 +130,7 @@ Step 6 of the Jupyter notebook "pipeline-single-image.ipynb" demonstrates the fi
 
 The code for processing videos is contained within the Jupyter notebook "pipeline-video.ipynb".
 
-Here's a [link to my video result](./project_video_processed.mp4)
+Here's a [link to my video result](./project_video_proccessed.mp4)
 
 ---
 
@@ -138,9 +138,9 @@ Here's a [link to my video result](./project_video_processed.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-The approach carried out in this project perform quite well on the project video. However, it did not perform that well on the more chalenging videos (see for example, [link to my video result](./challenge_video_processed.mp4)). 
+The approach carried out in this project performs quite well on the project video. However, it did not perform that well on the more chalenging videos (see, for example, [link to my video result](./challenge_video_proccessed.mp4)). 
 
-In order to improve the lane detection results, I have tried the followings (pipeline-video-alternative.ipynb):
+In order to improve the lane detection results, I have tried the following alternatives (detailed in pipeline-video-alternative.ipynb):
 
 - Define a region of interest using the approach in the first lane detection project:
 
@@ -156,8 +156,9 @@ selected_img = region_of_interest(result, vertices)
 
 - Combining Hough transform with histogram based approach (pipeline-single-image-Hough.ipynb)
 
+Despite these modification, it is still challenging to detect lanes in the challenging videos.
 
-
+The approach presented in this project rely heavily on a hand-designed pipeline, with expert understanding of the color space, and some heuristical rules (such as binary thresholding, histogram threshold to detect lane pixels). Learning based approached based on human anotated lane lines might improve the existing approach, as well as resolving corner cases (such as left lane appearing in the right-half of the image (due to vehicle veering off road). 
 
 
 
