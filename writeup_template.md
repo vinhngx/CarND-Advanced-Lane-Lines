@@ -17,11 +17,13 @@ The goals / steps of this project are the following:
 
 [undistort_img_example]: ./examples/undistort_img_example.png "Undistorted"
 
-[image2]: ./test_images/test1.jpg "Road Transformed"
-[image3]: ./examples/binary_combo_example.jpg "Binary Example"
-[image4]: ./examples/warped_straight_lines.jpg "Warp Example"
-[image5]: ./examples/color_fit_lines.jpg "Fit Visual"
-[image6]: ./examples/example_output.jpg "Output"
+[image2]: examples/undistorted_test1.png "Test image"
+[image3]: ./examples/undistorted_test1_binary.png "Binary Example"
+[image4]: ./examples/undistorted_test1_warped.png "Warp Example"
+[image4b]: ./examples/binary_test1_warped.png "Binary Warp Example"
+[image5]: ./examples/window_based_lane_detection.png "Window based lane detection"
+
+[image6]: ./examples/pipeline_single_final.png "Output"
 [video1]: ./project_video.mp4 "Video"
 
 ## [Rubric](https://review.udacity.com/#!/rubrics/571/view) Points
@@ -46,9 +48,11 @@ I start by preparing "object points", which will be the (x, y, z) coordinates of
 
 I then used the output `obj_points` and `img_points` to compute the camera calibration and distortion coefficients using the `cv2.calibrateCamera()` function.  I applied this distortion correction to the test image using the `cv2.undistort()` function and obtained this result: 
 
-![alt undistort_img_example][undistort_img_example.png]
+![undistort_img_example][undistort_img_example]
 
 ### Pipeline (single images)
+
+The pipeline for single images is detailed in the Jupyter notebook "pipeline-single-image.ipynb".
 
 #### 1. Provide an example of a distortion-corrected image.
 
@@ -57,53 +61,64 @@ To demonstrate this step, I will describe how I apply the distortion correction 
 
 #### 2. Describe how (and identify where in your code) you used color transforms, gradients or other methods to create a thresholded binary image.  Provide an example of a binary image result.
 
-I used a combination of color and gradient thresholds to generate a binary image (thresholding steps at lines # through # in `another_file.py`).  Here's an example of my output for this step.  (note: this is not actually from one of the test images)
+I used a combination of color and gradient thresholds to generate a binary image. This step is detailed in Step 2 of the Jupyter notebook "pipeline-single-image.ipynb". Here's an example of my output for this step. 
 
 ![alt text][image3]
 
 #### 3. Describe how (and identify where in your code) you performed a perspective transform and provide an example of a transformed image.
 
-The code for my perspective transform includes a function called `warper()`, which appears in lines 1 through 8 in the file `example.py` (output_images/examples/example.py) (or, for example, in the 3rd code cell of the IPython notebook).  The `warper()` function takes as inputs an image (`img`), as well as source (`src`) and destination (`dst`) points.  I chose the hardcode the source and destination points in the following manner:
+The code for my perspective transform is detailed in Step 3 of the Jupyter notebook "pipeline-single-image.ipynb"
+
+The source and destination points are defined as below:
 
 ```python
+#Four source cordinates
 src = np.float32(
-    [[(img_size[0] / 2) - 55, img_size[1] / 2 + 100],
-    [((img_size[0] / 6) - 10), img_size[1]],
-    [(img_size[0] * 5 / 6) + 60, img_size[1]],
-    [(img_size[0] / 2 + 55), img_size[1] / 2 + 100]])
+    [[254, 700],
+     [595, 449],
+     [688, 448],
+     [1062, 693]
+    ])
+#Four desired cordinates
 dst = np.float32(
-    [[(img_size[0] / 4), 0],
-    [(img_size[0] / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), img_size[1]],
-    [(img_size[0] * 3 / 4), 0]])
+    [[254, 700],
+     [254, 0],
+     [1062, 0],
+     [1061, 693]
+    ])
 ```
 
 This resulted in the following source and destination points:
 
 | Source        | Destination   | 
 |:-------------:|:-------------:| 
-| 585, 460      | 320, 0        | 
-| 203, 720      | 320, 720      |
-| 1127, 720     | 960, 720      |
-| 695, 460      | 960, 0        |
+| 254, 700      | 254, 700     | 
+| 595, 449      | 254, 0       |
+| 688, 448      | 1062, 0      |
+| 1062, 693     | 1061, 693    |
 
 I verified that my perspective transform was working as expected by drawing the `src` and `dst` points onto a test image and its warped counterpart to verify that the lines appear parallel in the warped image.
 
 ![alt text][image4]
+![alt text][image4b]
 
 #### 4. Describe how (and identify where in your code) you identified lane-line pixels and fit their positions with a polynomial?
 
-Then I did some other stuff and fit my lane lines with a 2nd order polynomial kinda like this:
+The code for finding lane lines is detailed in Step 4 of the Jupyter notebook "pipeline-single-image.ipynb". We employ a sliding window and histogram based method. This step is applied on a binary warped image. The vertical dimension of the image is divided into 9 equi-height sections. 
+The image is devided into two halves: the left lane and right lane are detected seperately. 
+The base points for start searching the lane is the peak location of the histogram. 
 
+Starting from the bottom section of the image, for each window centred at the base point, if the number of pixel is larger than the threshold, they are determined to form part of the respective lane lines. 
+The outcome of this step for the above test sample is demonstrated in the below image:
 ![alt text][image5]
 
 #### 5. Describe how (and identify where in your code) you calculated the radius of curvature of the lane and the position of the vehicle with respect to center.
 
-I did this in lines # through # in my code in `my_other_file.py`
+The code for calculating road curvature and position of the vehicle is detailed in Step 5 of the Jupyter notebook "pipeline-single-image.ipynb".
 
 #### 6. Provide an example image of your result plotted back down onto the road such that the lane area is identified clearly.
 
-I implemented this step in lines # through # in my code in `yet_another_file.py` in the function `map_lane()`.  Here is an example of my result on a test image:
+Step 6 of the Jupyter notebook "pipeline-single-image.ipynb" demonstrates the final lane area detection result super-imposed on the original image. 
 
 ![alt text][image6]
 
@@ -113,7 +128,9 @@ I implemented this step in lines # through # in my code in `yet_another_file.py`
 
 #### 1. Provide a link to your final video output.  Your pipeline should perform reasonably well on the entire project video (wobbly lines are ok but no catastrophic failures that would cause the car to drive off the road!).
 
-Here's a [link to my video result](./project_video.mp4)
+The code for processing videos is contained within the Jupyter notebook "pipeline-video.ipynb".
+
+Here's a [link to my video result](./project_video_processed.mp4)
 
 ---
 
@@ -121,4 +138,29 @@ Here's a [link to my video result](./project_video.mp4)
 
 #### 1. Briefly discuss any problems / issues you faced in your implementation of this project.  Where will your pipeline likely fail?  What could you do to make it more robust?
 
-Here I'll talk about the approach I took, what techniques I used, what worked and why, where the pipeline might fail and how I might improve it if I were going to pursue this project further.  
+The approach carried out in this project perform quite well on the project video. However, it did not perform that well on the more chalenging videos (see for example, [link to my video result](./challenge_video_processed.mp4)). 
+
+In order to improve the lane detection results, I have tried the followings (pipeline-video-alternative.ipynb):
+
+- Define a region of interest using the approach in the first lane detection project:
+
+```python
+#Define a region of interest
+vertices = np.array([[(0,Y),(0.45*X, 0.55*Y), (0.55*X, 0.55*Y), (X,Y)]], dtype=np.int32)
+selected_img = region_of_interest(result, vertices)
+```
+
+- Combine hough transform for lane line detection with a window based approach
+
+- Memorize the base location of the lanes in the current frame and use that as a starting search point for the next frame. This alternative approach is implemented in the notebook "pipeline-video-alternative.ipynb". 
+
+- Combining Hough transform with histogram based approach (pipeline-single-image-Hough.ipynb)
+
+
+
+
+
+
+
+
+
