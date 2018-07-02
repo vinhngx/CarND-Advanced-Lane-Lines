@@ -163,16 +163,16 @@ The approach presented in this project relies heavily on a hand-designed pipelin
 
 ### 2nd attempt
 
-The approach carried out in the first submission, although doing well on most of the frame, seriously mis-identified the lanes in several frames which could potentially lead to dangerous driving actions. In the 2nd attempt, we trialed several approaches, detailed in the Jupyter notebook [pipeline-video-alternative.ipynb](./pipeline-video-alternative.ipynb).
+The approach carried out in the first submission, although doing well on most of the frames, seriously mis-identified the lanes in several frames which could potentially lead to dangerous driving actions. In the 2nd attempt, we trialed several approaches, detailed in the Jupyter notebook [pipeline-video-alternative.ipynb](./pipeline-video-alternative.ipynb).
 
-(1) - Plotting the intermediate lane detection step side-by-side with the final detection resuls to help debugging. This visualization reveals that the lane detection pipeline failed whether there are tree casting shades onto the road, making a large patch of pixels in the binary image.
+(1) - Plotting the intermediate lane detection step side-by-side with the final detection result to help debugging. This visualization reveals that the lane detection pipeline failed where there are trees casting heavy shades onto the road, making a large patch of pixels in the binary image.
 
 (2) - Take derivative in the S channel instead:
 
 ```python
-sobelx = cv2.Sobel(l_channel, cv2.CV_64F, 1, 0) # Take the derivative in x
+sobelx = cv2.Sobel(s_channel, cv2.CV_64F, 1, 0) # Take the derivative in x
 ```
-This make the left white lane a bit more unstable. Thus we did not adopt this.
+This make the left lane (white color) a bit more unstable. Thus we did not adopt this approach.
 
 
 (3) - Sanity check to see if the lanes detected in the current frame deviates significantly from the previously detected lanes (by at most 0.5m).
