@@ -160,3 +160,56 @@ Despite these modification, it is still challenging to detect lanes in the chall
 
 The approach presented in this project relies heavily on a hand-designed pipeline, with expert understanding of the color space, and some heuristical rules (such as binary thresholding, histogram threshold to detect lane pixels). Learning-based approaches using human-annotated lane lines might improve the existing approach, as well as resolving corner cases (such as left lane appearing in the right-half of the image (due to vehicle veering off road). 
 
+
+### 2nd attempt
+
+The approach carried out in the first submission, although doing well on most of the frame, seriously mis-identified the lanes in several frames which could potentially lead to dangerous driving actions. In the 2nd attempt, we trialed several approaches, detailed in the Jupyter notebook [pipeline-video-alternative.ipynb](./pipeline-video-alternative.ipynb).
+
+(1) - Plotting the intermediate lane detection step side-by-side with the final detection resuls to help debugging. This visualization reveals that the lane detection pipeline failed whether there are tree casting shades onto the road, making a large patch of pixels in the binary image.
+
+(2) - Take derivative in the S channel instead:
+
+```python
+sobelx = cv2.Sobel(l_channel, cv2.CV_64F, 1, 0) # Take the derivative in x
+```
+This make the left white lane a bit more unstable. Thus we did not adopt this.
+
+
+(3) - Sanity check to see if the lanes detected in the current frame deviates significantly from the previously detected lanes (by at most 0.5m).
+
+```python
+def sane_lane(left_fitx, right_fitx, left_fit, right_fit, THRESHOLD=700/3.7/2):
+    global sane_left
+    global sane_right
+    global PREV_left_fit
+    global PREV_right_fit
+    
+    violation = False
+    if np.average(np.abs(left_fitx - sane_left)) < THRESHOLD:
+        sane_left = left_fitx
+        PREV_left_fit = left_fit
+    else: 
+        violation = True
+        #lane deviates too much from the previous frame, keep previous detection   
+        left_fit = PREV_left_fit
+    if np.average(np.abs(right_fitx - sane_right)) < THRESHOLD:
+        sane_right = right_fitx
+        PREV_right_fit = right_fit
+    else: 
+        violation = True
+        #lane deviates too much from the previous frame, keep previous detection   
+        right_fit = PREV_right_fit
+    return violation, left_fit, right_fit
+```
+
+(4) - Smoothing out curve fitting, by merging the lane pixels detected in the previous frame with the current frame. 
+
+In the end, we found that combining (1) and (4) works well in improving the lane detection results, presented in [project_video_proccessed_2nd.mp4](./project_video_proccessed_2nd.mp4))
+
+
+
+
+
+
+
+
